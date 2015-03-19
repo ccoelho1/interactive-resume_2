@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<!--
+This is an HTML document. It contains information about how elements in the website
+are arranged. In other words, it describes the layout of a website.
+
+I can't wait to see the resumes you put together!
+
+Cameron Pittman, Udacity Course Developer
+-->
+
+<!--
+The <head> of a website generally links to important resources the page will
+need to load. You'll see a lot of <link>s to CSS files for styles and
+<scripts> for JavaScript files to build interactions.
+-->
+<head>
+  <!-- This tells the browser how to read the document. -->
+  <meta charset="utf-8">
+
+  <!-- Tells the browser what the title of this page should be. -->
+  <title>Resume</title>
+  
+  <!-- Load the page styles. -->
+  <link href="css/style.css" rel="stylesheet" type="text/css">
+  
+  <!--
+  jQuery is a common JavaScript library for reading and making changes to the
+  Document Object Model (DOM). The DOM is a tree that contains information
+  about what is actually visible on a website.
+
+  While HTML is a static document, the browser converts HTML to the
+  DOM and the DOM can change. In fact, JavaScript's power comes from
+  its ability to manipulate the DOM, which is essentially a JavaScript
+  object. When JavaScript makes something interesting happen on a
+  website, it's likely the action happened because JavaScript changed
+  the DOM. jQuery is fast and easy to use, but it doesn't do anything
+  you can't accomplish with vanilla (regular) JavaScript.
+  -->
+  <script src="js/jQuery.js"></script>
+
+  <!-- More on helper.js in the class -->
+  <script src="js/helper.js"></script>
+
+  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places"></script>
+
+
+  <meta name="viewport" content="width=device-width">
+</head>
+<body unresolved>
+ 
+    <!--raimbow worm -->
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+var margin = {top: 100, right: 100, bottom: 100, left: 100},
+    width = 1200 - margin.left - margin.right,
+    height = 150 - margin.top - margin.bottom;
+
+var x = d3.scale.linear()
+    .domain([0, 5.9])
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .domain([-1, 1])
+    .range([height, 0]);
+
+var z = d3.scale.linear()
+    .domain([0, 5.9])
+    .range([0, 360]);
+
+var points = d3.range(0, 6, .1).map(function(t) {
+  return {value: t, 0: x(t), 1: y(Math.sin(t))};
+});
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var path = svg.selectAll("path")
+    .data(quad(points))
+  .enter().append("path")
+    .style("fill", function(d) { return d3.hsl(z(d[1].value), 1, .5); })
+    .style("stroke", "#000");
+
+var t0 = Date.now();
+d3.timer(function() {
+  var dt = (Date.now() - t0) * .001;
+  points.forEach(function(d) { d[1] = y(d.scale = Math.sin(d.value + dt)); });
+  path.attr("d", function(d) { return lineJoin(d[0], d[1], d[2], d[3], 80 * d[1].scale * d[1].scale + 10); });
+});
+
+// Compute quads of adjacent points [p0, p1, p2, p3].
+function quad(points) {
+  return d3.range(points.length - 1).map(function(i) {
+    return [points[i - 1], points[i], points[i + 1], points[i + 2]];
+  });
+}
+
+// Compute stroke outline for segment p12.
+function lineJoin(p0, p1, p2, p3, width) {
+  var u12 = perp(p1, p2),
+      r = width / 2,
+      a = [p1[0] + u12[0] * r, p1[1] + u12[1] * r],
+      b = [p2[0] + u12[0] * r, p2[1] + u12[1] * r],
+      c = [p2[0] - u12[0] * r, p2[1] - u12[1] * r],
+      d = [p1[0] - u12[0] * r, p1[1] - u12[1] * r];
+
+  if (p0) { // clip ad and dc using average of u01 and u12
+    var u01 = perp(p0, p1), e = [p1[0] + u01[0] + u12[0], p1[1] + u01[1] + u12[1]];
+    a = lineIntersect(p1, e, a, b);
+    d = lineIntersect(p1, e, d, c);
+  }
+
+  if (p3) { // clip ab and dc using average of u12 and u23
+    var u23 = perp(p2, p3), e = [p2[0] + u23[0] + u12[0], p2[1] + u23[1] + u12[1]];
+    b = lineIntersect(p2, e, a, b);
+    c = lineIntersect(p2, e, d, c);
+  }
+
+  return "M" + a + "L" + b + " " + c + " " + d + "Z";
+}
+
+// Compute intersection of two infinite lines ab and cd.
+function lineIntersect(a, b, c, d) {
+  var x1 = c[0], x3 = a[0], x21 = d[0] - x1, x43 = b[0] - x3,
+      y1 = c[1], y3 = a[1], y21 = d[1] - y1, y43 = b[1] - y3,
+      ua = (x43 * (y1 - y3) - y43 * (x1 - x3)) / (y43 * x21 - x43 * y21);
+  return [x1 + ua * x21, y1 + ua * y21];
+}
+
+// Compute unit vector perpendicular to p01.
+function perp(p0, p1) {
+  var u01x = p0[1] - p1[1], u01y = p1[0] - p0[0],
+      u01d = Math.sqrt(u01x * u01x + u01y * u01y);
+  return [u01x / u01d, u01y / u01d];
+}
+
+</script>
+<!--end rainbow worm -->   
+ 
+    <div id="main">
+        <!-- You'll be deleting this line in the course -->
+    <!--
+    Everything from here to the <script> tag below is the skeleton of your
+    website. Your code will add information to each of the sections of the
+    resume below. You can pretty easily figure out what each section will
+    display by looking at the id or at what's written between the <h2> tags.
+    -->
+    <div id="header" class="center-content clearfix">
+      <ul id="topContacts" class='flex-box'></ul>
+    </div>
+    <div style='clear: both;'></div>
+    <div id="workExperience" class='gray'>
+      <h2>Work Experience</h2>
+    </div>
+    <div id="projects">
+      <h2>Projects</h2>
+    </div>
+    <div id="education" class='gray'>
+      <h2>Education</h2>
+    </div>
+    <div id="mapDiv">
+      <h2>Where I've Lived and Worked</h2>
+    </div>
+    <div id="letsConnect" class='dark-gray'>
+      <h2 class='orange center-text'>Let's Connect</h2>
+        <ul id="footerContacts" class="flex-box">
+      </ul>
+    </div>
+  </div>
+
+  <!--
+  The next line tells the browser where to download the JavaScript file you'll be
+  writing. In resumeBuilder.js, you'll be writing code that builds the resume
+  dynamically when this website, index.html, is opened.
+  -->
+  <script src="js/resumeBuilder.js"></script>
+
+
+  <!--
+  These scripts are written in JavaScript. You'll be breaking them down as part of
+  a quiz. Essentially, the next few lines are checking to see if you have not
+  changed each section of the resume. If you have not made any changes to a section
+  of the resume, then that part of the resume does not show up. More on this in the
+  course.
+  -->
+
+  <script type="text/javascript">
+    // Notice how all of a sudden there's JavaScript inside this HTML
+    // document? You can write JavaScript between <script> tags. At the end of your
+    // JavaScript, don't forget the closing script tag with the slash (/).
+
+
+    // Also, this is a JavaScript style comment. You can comment in JavaScript with:
+
+    //   two slashes for all following characters on a single line, or
+
+    /*
+        an opening and closing set of slash asterisks for block comments.
+    */
+
+
+    if(document.getElementsByClassName('flex-item').length === 0) {
+      document.getElementById('topContacts').style.display = 'none';
+    }
+    if(document.getElementsByTagName('h1').length === 0) {
+      document.getElementById('header').style.display = 'none';
+    }
+    if(document.getElementsByClassName('work-entry').length === 0) {
+      document.getElementById('workExperience').style.display = 'none';
+    }
+    if(document.getElementsByClassName('project-entry').length === 0) {
+      document.getElementById('projects').style.display = 'none';
+    }
+    if(document.getElementsByClassName('education-entry').length === 0) {
+      document.getElementById('education').style.display = 'none';
+    }
+    if(document.getElementsByClassName('flex-item').length === 0) {
+      document.getElementById('letsConnect').style.display = 'none';
+    }
+    if(document.getElementById('map') === null) {
+      document.getElementById('mapDiv').style.display = 'none';
+    }
+    </script>
+</body>
+</html>
